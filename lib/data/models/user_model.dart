@@ -1,10 +1,10 @@
-import 'package:attendance_app/data/models/attendance_model.dart';
+import 'package:attendance_app/domain/entities/user.dart';
 import 'package:hive/hive.dart';
 
 part 'user_model.g.dart';
 
 @HiveType(typeId: 1)
-class UserModel extends HiveObject {
+class UserModel extends User {
   @HiveField(0)
   final String id;
   @HiveField(1)
@@ -12,12 +12,13 @@ class UserModel extends HiveObject {
   @HiveField(2)
   final String email;
   @HiveField(3)
-  final List<AttendanceModel>? attendances;
+  final bool? isPresent;
+
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
-    this.attendances,
-  });
+    this.isPresent,
+  }) : super(id: id, name: name, email: email, isPresent: isPresent);
 }

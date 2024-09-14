@@ -1,5 +1,4 @@
 import 'package:attendance_app/config/app_colors.dart';
-import 'package:attendance_app/config/app_module.dart';
 import 'package:attendance_app/presentation/boarding/widget/intro_widget.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';

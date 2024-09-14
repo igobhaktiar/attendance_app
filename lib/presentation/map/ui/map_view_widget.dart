@@ -24,8 +24,10 @@ class MapViewWidget extends GetWidget<MapViewController> {
             initialCenter: controller.currentLocation.value!,
             initialZoom: 15.0,
             onTap: (tapPosition, point) {
-              controller.selectedLocation.value = point;
-              controller.isSelectingLocation.value = true;
+              if (controller.getOfficeSet == false) {
+                controller.selectedLocation.value = point;
+                controller.isSelectingLocation.value = true;
+              }
             },
           ),
           children: [
@@ -33,18 +35,24 @@ class MapViewWidget extends GetWidget<MapViewController> {
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               subdomains: const ['a', 'b', 'c'],
             ),
-            if (controller.isOfficeSet)
-              CircleLayer(
-                circles: [
-                  CircleMarker(
-                    point: controller.officeLocation,
-                    radius: controller.officeRadius.value,
-                    color: Colors.blue.withOpacity(0.3),
-                    borderColor: Colors.blue,
-                    borderStrokeWidth: 2,
-                  ),
-                ],
-              ),
+            if (controller.getOfficeSet)
+              Obx(() {
+                controller.getCurrentLocation();
+                return CircleLayer(
+                  circles: [
+                    CircleMarker(
+                      point: controller.officeLocation,
+                      radius: controller.officeRadius.value,
+                      color: controller.isUserInOffice
+                          ? Colors.blue.withOpacity(0.3)
+                          : Colors.red.withOpacity(0.3),
+                      borderColor:
+                          controller.isUserInOffice ? Colors.blue : Colors.red,
+                      borderStrokeWidth: 2,
+                    ),
+                  ],
+                );
+              }),
             CurrentLocationLayer(
               alignPositionOnUpdate: AlignOnUpdate.once,
               alignDirectionOnUpdate: AlignOnUpdate.never,
@@ -58,6 +66,17 @@ class MapViewWidget extends GetWidget<MapViewController> {
                     height: 80.0,
                     point:
                         controller.selectedLocation.value ?? const LatLng(0, 0),
+                    child: const Icon(
+                      Icons.location_on,
+                      size: 40,
+                      color: Colors.red,
+                    ),
+                  ),
+                if (controller.getOfficeSet)
+                  Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: controller.officeLocation,
                     child: const Icon(
                       Icons.location_on,
                       size: 40,

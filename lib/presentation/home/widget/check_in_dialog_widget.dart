@@ -8,7 +8,10 @@ import 'package:ionicons/ionicons.dart';
 class CheckInDialogWidget extends GetWidget<ButtonCheckInController> {
   const CheckInDialogWidget({
     super.key,
+    required this.onCheckIn,
   });
+
+  final VoidCallback onCheckIn;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +33,19 @@ class CheckInDialogWidget extends GetWidget<ButtonCheckInController> {
             ),
             const SizedBox(height: 16),
             ButtonPrimaryWidget(
-              onPressed: () {},
-              text: 'Check In',
-              color: Colors.green,
-              icon: const Icon(Ionicons.checkmark_done_outline),
+              onPressed: () => onCheckIn(),
+              text: controller.isCheckIn.value == false
+                  ? 'Check In'
+                  : 'Check Out',
+              color: controller.isCheckIn.value == false
+                  ? Colors.teal
+                  : Colors.red,
+              icon: Icon(
+                controller.isCheckIn.value == false
+                    ? Ionicons.checkmark_done
+                    : Ionicons.calendar_clear_sharp,
+                color: Colors.white,
+              ),
               texColor: Colors.white,
             )
           ],

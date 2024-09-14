@@ -3,11 +3,15 @@ import 'package:attendance_app/config/app_routes.dart';
 import 'package:attendance_app/core/widget/button_primary_widget.dart';
 import 'package:attendance_app/core/widget/textfield_primary_widget.dart';
 import 'package:attendance_app/presentation/boarding/controller/boarding_controller.dart';
+import 'package:attendance_app/presentation/map/controller/map_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OfficeLocationBoardingPage extends GetWidget<BoardingController> {
-  const OfficeLocationBoardingPage({super.key});
+class OfficeLocationBoardingPage extends StatelessWidget {
+  OfficeLocationBoardingPage({super.key});
+
+  final controller = Get.find<BoardingController>();
+  final _mapViewController = Get.find<MapViewController>();
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +125,10 @@ class OfficeLocationBoardingPage extends GetWidget<BoardingController> {
               ),
               // select location
               ButtonPrimaryWidget(
-                onPressed: () => Get.toNamed(AppRoutes.mapLocation),
+                onPressed: () {
+                  _mapViewController.isOfficeSet.value = false;
+                  Get.toNamed(AppRoutes.mapLocation);
+                },
                 text: 'Select Location',
                 color: AppColors.grey,
                 texColor: AppColors.primary,
@@ -134,7 +141,10 @@ class OfficeLocationBoardingPage extends GetWidget<BoardingController> {
                 height: 16,
               ),
               ButtonPrimaryWidget(
-                onPressed: () => controller.saveOfficeLocation(),
+                onPressed: () {
+                  controller.saveOfficeLocation();
+                  _mapViewController.isOfficeSet.value = true;
+                },
                 text: 'Next',
                 color: AppColors.primary,
                 texColor: Colors.white,

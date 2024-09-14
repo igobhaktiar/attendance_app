@@ -2,10 +2,8 @@ import 'package:attendance_app/config/app_colors.dart';
 import 'package:attendance_app/presentation/home/controller/home_controller.dart';
 import 'package:attendance_app/presentation/home/widget/button_checkin_widget.dart';
 import 'package:attendance_app/presentation/home/widget/home_app_bar_widget.dart';
-import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ionicons/ionicons.dart';
 
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
@@ -62,62 +60,8 @@ class HomePage extends GetView<HomeController> {
             ),
           ),
           const SizedBox(height: 24),
-          _buildActivityTime(),
         ],
       ),
-    );
-  }
-
-  Widget _buildActivityTime() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildTime(
-          icon: Ionicons.enter_outline,
-          time: '08:00',
-          status: 'Check In',
-          color: Colors.green,
-        ),
-        _buildTime(
-          icon: Ionicons.exit_outline,
-          time: '05:00',
-          status: 'Check Out',
-          color: Colors.red,
-        ),
-        _buildTime(
-          icon: FluentSystemIcons.ic_fluent_clock_regular,
-          time: '08:02',
-          status: 'Total Hours',
-          color: Colors.black54,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTime(
-      {IconData? icon, String? time, String? status, Color? color}) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          color: color,
-          size: 24,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          time ?? '08:00',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          status ?? 'Check In',
-          style: const TextStyle(
-            color: Colors.black54,
-          ),
-        ),
-      ],
     );
   }
 

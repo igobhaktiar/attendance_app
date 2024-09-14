@@ -4,7 +4,6 @@ import 'package:attendance_app/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/adapters.dart';
-
 import 'config/app_module.dart';
 import 'presentation/boarding/binding/boarding_binding.dart';
 
@@ -16,10 +15,9 @@ void main() async {
   // hive
   await Hive.initFlutter();
   Hive.registerAdapter(OfficeLocationModelAdapter());
-  await Hive.openBox<OfficeLocationModel>('office');
   Hive.registerAdapter(UserModelAdapter());
-  await Hive.openBox<UserModel>('user');
-
+  await Hive.openBox<UserModel>('user-data');
+  await Hive.openBox<OfficeLocationModel>('office');
   runApp(const MyApp());
 }
 

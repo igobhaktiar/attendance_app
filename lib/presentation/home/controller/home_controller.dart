@@ -1,12 +1,19 @@
+import 'package:attendance_app/data/models/user_model.dart';
 import 'package:attendance_app/domain/usecases/office_usecases.dart';
 import 'package:attendance_app/domain/usecases/user_usecases.dart';
+import 'package:attendance_app/presentation/home/controller/button_checkin_controller.dart';
 import 'package:attendance_app/presentation/home/widget/check_in_dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../map/controller/map_controller.dart';
 
 class HomeController extends GetxController {
   final _userUseCase = Get.find<UserUseCases>();
   final _officeUseCase = Get.find<OfficeUseCases>();
+  final _mapViewController = Get.find<MapViewController>();
+  final _buttonCheckInController = Get.find<ButtonCheckInController>();
 
   final _currentTime = '00:00'.obs;
   final _currentDate = 'Monday, 01 January 2021'.obs;
@@ -14,18 +21,13 @@ class HomeController extends GetxController {
   final _fullName = ''.obs;
   final _officeName = ''.obs;
   final _officeAddress = ''.obs;
-
-  String get currentTime => _currentTime.value;
-
-  String get currentDate => _currentDate.value;
-
-  String get amPm => _amPm.value;
-
-  String get fullName => _fullName.value;
-
-  String get officeName => _officeName.value;
-
-  String get officeAddress => _officeAddress.value;
+  final isPresented = false.obs;
+  final _userData = UserModel(
+    id: '',
+    name: '',
+    email: '',
+    isPresent: false,
+  ).obs;
 
   @override
   void onInit() {
@@ -37,9 +39,11 @@ class HomeController extends GetxController {
 
   void _getUser() async {
     var user = await _userUseCase.getUser();
-
     if (user != null) {
       _fullName.value = user.name;
+      _userData.value = user;
+      isPresented.value = user.isPresent == null ? false : user.isPresent!;
+      print('isPresent: ${isPresented.value}');
     }
   }
 
@@ -53,9 +57,78 @@ class HomeController extends GetxController {
   }
 
   void onPressCheckIn() {
-    Get.dialog(
-      const CheckInDialogWidget(),
-    );
+    if (isPresented.value == true) {
+      Get.dialog(
+        CheckInDialogWidget(
+          onCheckIn: _onCheckout,
+        ),
+      );
+    } else {
+      Get.dialog(
+        CheckInDialogWidget(
+          onCheckIn: _onCheckIn,
+        ),
+      );
+    }
+  }
+
+  void _onCheckIn() async {
+    var isUserInOffice = _mapViewController.isUserInOffice;
+    if (isUserInOffice) {
+      var user = await _userUseCase.getUser();
+      try {
+        var updatedUser = UserModel(
+          id: user?.id ?? const Uuid().v4(),
+          name: user?.name ?? '',
+          email: user?.email ?? '',
+          isPresent: true,
+        );
+        await _userUseCase.saveUser(updatedUser);
+        _buttonCheckInController.checkInfo();
+        Get.snackbar(
+          'Success',
+          'You have checked in',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.green.withOpacity(0.5),
+          colorText: Colors.white,
+        );
+        _getUser();
+        Navigator.of(Get.overlayContext!).pop();
+      } catch (e) {
+        Get.snackbar('Failed', 'Failed to check in');
+        return;
+      }
+    } else {
+      Get.snackbar('Failed', 'You are not in the office');
+    }
+  }
+
+  void _onCheckout() async {
+    var user = await _userUseCase.getUser();
+    try {
+      var updatedUser = UserModel(
+        id: user?.id ?? const Uuid().v4(),
+        name: user?.name ?? '',
+        email: user?.email ?? '',
+        isPresent: false,
+      );
+      await _userUseCase.saveUser(updatedUser);
+      _buttonCheckInController.checkInfo();
+      Get.snackbar(
+        'Success',
+        'You have checked out',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.green.withOpacity(0.5),
+        colorText: Colors.white,
+      );
+      _getUser();
+      Navigator.of(Get.overlayContext!).pop();
+    } catch (e) {
+      Get.snackbar('Failed', 'Failed to check out');
+      return;
+    }
   }
 
   void _updateTime() {
@@ -122,4 +195,18 @@ class HomeController extends GetxController {
         return '';
     }
   }
+
+  String get currentTime => _currentTime.value;
+
+  String get currentDate => _currentDate.value;
+
+  String get amPm => _amPm.value;
+
+  String get fullName => _fullName.value;
+
+  String get officeName => _officeName.value;
+
+  String get officeAddress => _officeAddress.value;
+
+  UserModel get userData => _userData.value;
 }

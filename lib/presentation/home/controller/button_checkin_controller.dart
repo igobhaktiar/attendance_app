@@ -1,11 +1,17 @@
+import 'package:attendance_app/domain/usecases/office_usecases.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../domain/usecases/user_usecases.dart';
 
 class ButtonCheckInController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late AnimationController spreadAnimationController;
   late Animation<double> spreadAnimation;
 
+  final _userUseCase = Get.find<UserUseCases>();
+
+  var isCheckIn = false.obs;
 
   @override
   void onInit() {
@@ -23,11 +29,21 @@ class ButtonCheckInController extends GetxController
         curve: Curves.easeInOut,
       ),
     );
+
+    checkInfo();
+  }
+
+  void checkInfo() async {
+    var user = await _userUseCase.getUser();
+    if (user != null) {
+      isCheckIn.value = user.isPresent == null ? false : user.isPresent!;
+    }
   }
 
   @override
   void onClose() {
     spreadAnimationController.dispose();
+    checkInfo();
     super.onClose();
   }
 

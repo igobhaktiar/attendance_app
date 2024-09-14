@@ -12,34 +12,21 @@ class MapViewController extends GetxController {
   final Rx<LatLng?> _officeLocation = Rx<LatLng?>(null);
   final officeRadius = 100.0.obs;
   var isSelectingLocation = false.obs;
-  final _isOfficeSet = false.obs;
+  final isOfficeSet = false.obs;
+  final _isUserInOffice = false.obs;
 
   LatLng? get selectedLocationValue => selectedLocation.value;
 
-  LatLng get officeLocation => _officeLocation.value!;
+  LatLng get officeLocation => _officeLocation.value ?? const LatLng(0, 0);
 
-  bool get isOfficeSet => _isOfficeSet.value;
+  bool get getOfficeSet => isOfficeSet.value;
+
+  bool get isUserInOffice => _isUserInOffice.value;
 
   @override
   void onInit() {
     super.onInit();
     getCurrentLocation();
-    _getOfficeLocation();
-  }
-
-  void _getOfficeLocation() async {
-    var office = await _officeUseCase.getOfficeLocation();
-    if (office != null) {
-      _isOfficeSet.value = true;
-      _officeLocation.value = LatLng(office.latitude, office.longitude);
-    }
-  }
-
-  bool isWithinOfficeRadius(LatLng point) {
-    if (_officeLocation.value == null) return false;
-    final distance =
-        const Distance().as(LengthUnit.Meter, _officeLocation.value!, point);
-    return distance <= officeRadius.value;
   }
 
   Future<void> getCurrentLocation() async {
@@ -68,10 +55,46 @@ class MapViewController extends GetxController {
           desiredAccuracy: LocationAccuracy.high);
 
       currentLocation.value = LatLng(position.latitude, position.longitude);
+      _getOfficeLocation();
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {
       isLocationLoading.value = false;
+    }
+  }
+
+  void _getOfficeLocation() async {
+    var office = await _officeUseCase.getOfficeLocation();
+    if (office != null) {
+      isOfficeSet.value = true;
+      _officeLocation.value = LatLng(office.latitude, office.longitude);
+      _checkUserInOffice();
+    }
+  }
+
+  void _checkUserInOffice() async {
+    // Collect multiple distance readings
+    List<double> distanceReadings = [];
+    for (int i = 0; i < 5; i++) {
+      double distance = Geolocator.distanceBetween(
+          currentLocation.value!.latitude,
+          currentLocation.value!.longitude,
+          officeLocation.latitude,
+          officeLocation.longitude);
+      distanceReadings.add(distance);
+      await Future.delayed(
+          const Duration(milliseconds: 500)); // Delay for stability
+    }
+
+    // Get the average distance
+    double averageDistance =
+        distanceReadings.reduce((a, b) => a + b) / distanceReadings.length;
+
+    // Check if user is within the office radius
+    if (averageDistance <= officeRadius.value) {
+      _isUserInOffice.value = true;
+    } else {
+      _isUserInOffice.value = false;
     }
   }
 }

@@ -44,7 +44,7 @@ class AppRoutes {
     ),
     GetPage(
       name: AppRoutes.officeBoarding,
-      page: () => const OfficeLocationBoardingPage(),
+      page: () => OfficeLocationBoardingPage(),
       binding: BoardingBinding(),
     ),
     GetPage(

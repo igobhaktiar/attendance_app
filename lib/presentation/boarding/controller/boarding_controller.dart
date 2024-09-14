@@ -20,10 +20,15 @@ class BoardingController extends GetxController {
   TextEditingController officeLatitudeController = TextEditingController();
   TextEditingController officeLongitudeController = TextEditingController();
 
+  final _isEditLocation = false.obs;
+
+  bool get isEditLocation => _isEditLocation.value;
+
   @override
   void onInit() {
     super.onInit();
     _observer();
+    _getOfficeData();
   }
 
   void _observer() async {
@@ -38,6 +43,16 @@ class BoardingController extends GetxController {
         Get.offNamed(AppRoutes.main);
       }
     });
+  }
+
+  void _getOfficeData() async {
+    var office = await officeUseCase.getOfficeLocation();
+    if (office != null) {
+      officeNameController.text = office.name;
+      officeAddressController.text = office.address;
+      officeLatitudeController.text = office.latitude.toString();
+      officeLongitudeController.text = office.longitude.toString();
+    }
   }
 
   void saveUser() {
@@ -101,5 +116,10 @@ class BoardingController extends GetxController {
       officeLongitudeController.text = selectedLocation.longitude.toString();
       Get.back();
     }
+  }
+
+  void editLocation() {
+    _isEditLocation.value = true;
+    Get.toNamed(AppRoutes.mapLocation);
   }
 }

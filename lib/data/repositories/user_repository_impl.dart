@@ -1,5 +1,4 @@
 import 'package:attendance_app/data/datasources/local/user_local_data_sources.dart';
-import 'package:attendance_app/data/models/attendance_model.dart';
 import 'package:attendance_app/data/models/user_model.dart';
 import 'package:attendance_app/domain/entities/user.dart';
 import 'package:attendance_app/domain/repositories/user_repository.dart';
@@ -19,8 +18,4 @@ class UserRepositoryImpl implements UserRepository {
     return userLocalDataSource.saveUser(user);
   }
 
-  @override
-  Future<void> updateUserAttendance(String userId, AttendanceModel? newAttendance) {
-    return userLocalDataSource.updateUserAttendance(userId, newAttendance);
-  }
 }

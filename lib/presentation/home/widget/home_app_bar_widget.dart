@@ -1,4 +1,5 @@
 import 'package:attendance_app/config/app_colors.dart';
+import 'package:attendance_app/config/app_routes.dart';
 import 'package:attendance_app/presentation/home/controller/home_controller.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +41,27 @@ class HomeAppBarWidget extends GetWidget<HomeController> {
               ],
             ),
             const SizedBox(height: 4),
-            Text(
-              '${controller.officeName} - ${controller.officeAddress}',
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
+            Obx(() {
+              return Row(
+                children: [
+                  Text(
+                    '${controller.officeName} - ${controller.officeAddress}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  IconButton(
+                    onPressed: () => Get.toNamed(AppRoutes.officeBoarding),
+                    icon: const Icon(
+                      FluentSystemIcons.ic_fluent_edit_filled,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              );
+            }),
           ],
         ),
         const SizedBox(width: 16),
