@@ -68,14 +68,13 @@ class HomePage extends GetView<HomeController> {
             ),
           ),
           const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
+          const SizedBox(
             width: double.infinity,
             height: 200,
-            child: const MapViewWidget(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              child: MapViewWidget(),
+            ),
           )
         ],
       ),
