@@ -2,6 +2,7 @@ import 'package:attendance_app/config/app_colors.dart';
 import 'package:attendance_app/presentation/home/controller/home_controller.dart';
 import 'package:attendance_app/presentation/home/widget/button_checkin_widget.dart';
 import 'package:attendance_app/presentation/home/widget/home_app_bar_widget.dart';
+import 'package:attendance_app/presentation/map/ui/map_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -59,7 +60,23 @@ class HomePage extends GetView<HomeController> {
               onTap: () => controller.onPressCheckIn(),
             ),
           ),
+          const Text(
+            'Your Location',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 24),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            width: double.infinity,
+            height: 200,
+            child: const MapViewWidget(),
+          )
         ],
       ),
     );
